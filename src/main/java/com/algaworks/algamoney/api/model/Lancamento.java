@@ -25,9 +25,11 @@ public class Lancamento {
 	private String descricao;
 
 	@Column(name = "data_vencimento")
+	// @JsonFormat(pattern =  "dd/MM/yyyy") -> Caso queira formatar a data, adicionar essa anotação
 	private LocalDate dataVencimento;
 
 	@Column(name = "data_pagamento")
+	// @JsonFormat(pattern =  "dd/MM/yyyy")
 	private LocalDate dataPagamento;
 
 	private BigDecimal valor;
