@@ -1,4 +1,4 @@
-package com.algaworks.algamoney.api;
+package com.algaworks.algamoney.api.service;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
