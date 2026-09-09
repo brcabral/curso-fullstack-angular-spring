@@ -3,6 +3,7 @@ package com.algaworks.algamoney.api.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -18,10 +19,12 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 	private final AuthenticationManager authenticationManager;
 	private final PasswordEncoder passwordEncoder;
+	private final UserDetailsService userDetailsService;	
 
-	AuthorizationServerConfig(AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder) {
+	public AuthorizationServerConfig(AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, UserDetailsService userDetailsService) {
 		this.authenticationManager = authenticationManager;
 		this.passwordEncoder = passwordEncoder;
+		this.userDetailsService = userDetailsService;
 	}
 
 	@Override
@@ -30,14 +33,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 				.withClient("angular")
 				.secret(passwordEncoder.encode("@ngul@r0"))
 				.scopes("read", "write")
-				.authorizedGrantTypes("password")
+				.authorizedGrantTypes("password", "refresh_token")
 				.accessTokenValiditySeconds(1800)
-			.and()
-				.withClient("mobile")
-				.secret(passwordEncoder.encode("m0b1l30"))
-				.scopes("read")
-				.authorizedGrantTypes("password")
-				.accessTokenValiditySeconds(1800);
+				.refreshTokenValiditySeconds(3600 * 24);
 	}
 
 	@Override
@@ -45,7 +43,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 		endpoints
 			.authenticationManager(authenticationManager)
 			.accessTokenConverter(accessTokenConverter())
-			.tokenStore(tokenStore());
+			.tokenStore(tokenStore())
+			.userDetailsService(userDetailsService)
+			.reuseRefreshTokens(false);
 	}
 
 	@Bean
