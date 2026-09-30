@@ -18,7 +18,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -29,17 +29,20 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 @EnableWebSecurity
 @SuppressWarnings("deprecation")
 public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
+	private final UserDetailsService userDetailsService;
+
+	public ResourceServerConfig(UserDetailsService userDetailsService) {
+		this.userDetailsService = userDetailsService;
+	}
+
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.inMemoryAuthentication()
-			.withUser("admin@algamoney.com")
-			.password("admin")
-			.roles("ROLE");
+		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 	}
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests()
+		http.authorizeRequests()
 			.antMatchers("/categorias").permitAll()
 			.anyRequest().authenticated()
 		.and()
@@ -64,19 +67,13 @@ public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-		return NoOpPasswordEncoder.getInstance();
-	}
-
-	@Bean
-	@Override
-	public UserDetailsService userDetailsServiceBean() throws Exception {
-		return super.userDetailsServiceBean();
+		return new BCryptPasswordEncoder();
 	}
 
 	private JwtAuthenticationConverter jwtAuthenticationConverter() {
 		JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
 		jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
-			List<String> authorities = jwt.getClaimAsStringList("authoroties");
+			List<String> authorities = jwt.getClaimAsStringList("authorities");
 
 			if (authorities == null) {
 				authorities = Collections.emptyList();

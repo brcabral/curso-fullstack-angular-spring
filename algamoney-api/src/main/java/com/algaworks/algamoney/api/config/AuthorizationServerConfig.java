@@ -18,12 +18,10 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 @SuppressWarnings("deprecation")
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 	private final AuthenticationManager authenticationManager;
-	private final PasswordEncoder passwordEncoder;
 	private final UserDetailsService userDetailsService;	
 
-	public AuthorizationServerConfig(AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, UserDetailsService userDetailsService) {
+	public AuthorizationServerConfig(AuthenticationManager authenticationManager, UserDetailsService userDetailsService) {
 		this.authenticationManager = authenticationManager;
-		this.passwordEncoder = passwordEncoder;
 		this.userDetailsService = userDetailsService;
 	}
 
@@ -31,7 +29,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
 		clients.inMemory()
 				.withClient("angular")
-				.secret(passwordEncoder.encode("@ngul@r0"))
+				.secret("$2a$10$wjcCo5HyKRC1CVEuwuhEVexdrFeg2VLGBp7Ptv./7.iQS/xS4ggNC") // @ngul@r0
 				.scopes("read", "write")
 				.authorizedGrantTypes("password", "refresh_token")
 				.accessTokenValiditySeconds(1800)
