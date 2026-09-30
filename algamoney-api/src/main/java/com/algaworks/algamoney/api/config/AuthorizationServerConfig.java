@@ -18,7 +18,7 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 @SuppressWarnings("deprecation")
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 	private final AuthenticationManager authenticationManager;
-	private final UserDetailsService userDetailsService;	
+	private final UserDetailsService userDetailsService;
 
 	public AuthorizationServerConfig(AuthenticationManager authenticationManager, UserDetailsService userDetailsService) {
 		this.authenticationManager = authenticationManager;
@@ -33,7 +33,15 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 				.scopes("read", "write")
 				.authorizedGrantTypes("password", "refresh_token")
 				.accessTokenValiditySeconds(1800)
+				.refreshTokenValiditySeconds(3600 * 24)
+			.and()
+				.withClient("mobile")
+				.secret("$2a$10$0YF4dpIiSO/CxMF6Xaz2n.zLPOP1RkYB6qfL3WWJKIHWZkSbED2JS") // m0b1l30
+				.scopes("read", "write")
+				.authorizedGrantTypes("password", "refresh_token")
+				.accessTokenValiditySeconds(1800)
 				.refreshTokenValiditySeconds(3600 * 24);
+		
 	}
 
 	@Override
