@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +22,7 @@ import com.algaworks.algamoney.api.config.token.CustomTokenEnhancer;
 
 @Configuration
 @EnableAuthorizationServer
+@Profile("oauth-security")
 @SuppressWarnings("deprecation")
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 	private final AuthenticationManager authenticationManager;
